@@ -2,6 +2,8 @@ package dto.checkin;
 
 import java.time.LocalDateTime;
 
+import models.CheckIn;
+
 public class CheckInRequest {
     private Long goalId;
     private LocalDateTime checkInDate;
@@ -55,5 +57,5 @@ public class CheckInRequest {
 
         return checkIn;
     }
-    
+
 }
