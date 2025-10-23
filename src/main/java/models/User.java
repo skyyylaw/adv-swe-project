@@ -35,9 +35,9 @@ public class User {
      */
     public User(String fullName, String email, String role) {
         this.id = uniqueId++;
-        this.fullName = fulleName;
+        this.fullName = fullName;
         this.email = email;
-        this.role = Role.valueof(role);
+        this.role = Role.valueOf(role);
         this.createdAt = LocalDate.now();
     }
 
