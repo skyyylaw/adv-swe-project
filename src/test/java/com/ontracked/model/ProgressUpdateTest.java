@@ -1,5 +1,6 @@
-package models;
+package com.ontracked.model;
 
+import com.ontracked.model.ProgressUpdate;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;

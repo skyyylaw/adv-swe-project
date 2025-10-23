@@ -1,6 +1,7 @@
-package dto.progress;
+package com.ontracked.progress;
 
-import models.ProgressUpdate;
+import com.ontracked.dto.progress.ProgressUpdateResponse;
+import com.ontracked.model.ProgressUpdate;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
