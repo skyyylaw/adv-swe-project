@@ -6,6 +6,9 @@ It was also used to add comments.
 
 package com.ontracked.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -43,7 +46,8 @@ public final class Goal {
   // --- Constructors ---
 
   /** Minimal constructor; sets sane defaults. */
-  public Goal(String ownerId) {
+  @JsonCreator
+  public Goal(@JsonProperty("ownerId") String ownerId) {
     this.id = UUID.randomUUID().toString();
     this.ownerId = requireNonBlank(ownerId, "ownerId");
     this.childrenId = new ArrayList<>();
