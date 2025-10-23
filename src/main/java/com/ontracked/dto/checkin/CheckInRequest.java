@@ -9,6 +9,8 @@ public class CheckInRequest {
     private LocalDateTime checkInDate;
     private String notes;
 
+    // Constructors, Getters, and Setters for checkin request
+
     public CheckInRequest() {
     }
 
