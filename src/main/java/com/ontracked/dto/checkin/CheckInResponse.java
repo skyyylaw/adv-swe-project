@@ -1,7 +1,7 @@
 package com.ontracked.dto.checkin;
 
-import com.ontracked.model.CheckIn;
 
+import com.ontracked.model.CheckIn;
 import java.time.LocalDateTime;
 
 public class CheckInResponse {

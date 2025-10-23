@@ -1,5 +1,8 @@
 package com.ontracked.dto.goal;
 
+import com.ontracked.model.Goal;
+import com.ontracked.model.GoalStatus;
+
 import java.time.Instant;
 import java.util.List;
 
@@ -12,7 +15,7 @@ public class GoalResponse {
   private String title;
   private String description;
   private String dueDate;                 // ISO yyyy-MM-dd or null
-  private models.GoalStatus status;
+  private GoalStatus status;
   private int latestPercentage;
   private Instant createdAt;
   private Instant updatedAt;
@@ -23,7 +26,7 @@ public class GoalResponse {
   public GoalResponse(
           String id, String ownerId, String parentId, List<String> childrenIds,
           String title, String description, String dueDate,
-          models.GoalStatus status, int latestPercentage,
+          GoalStatus status, int latestPercentage,
           Instant createdAt, Instant updatedAt, int versionNumber) {
     this.id = id;
     this.ownerId = ownerId;
@@ -40,7 +43,7 @@ public class GoalResponse {
   }
 
   /** Convenience mapper from domain model. */
-  public static GoalResponse from(models.Goal g) {
+  public static GoalResponse from(Goal g) {
     return new GoalResponse(
             g.getId(), g.getOwnerId(), g.getParentId(), g.getChildrenId(),
             g.getTitle(), g.getDescription(), g.getDueDate(),
@@ -55,7 +58,7 @@ public class GoalResponse {
   public String getTitle() { return title; }
   public String getDescription() { return description; }
   public String getDueDate() { return dueDate; }
-  public models.GoalStatus getStatus() { return status; }
+  public GoalStatus getStatus() { return status; }
   public int getLatestPercentage() { return latestPercentage; }
   public Instant getCreatedAt() { return createdAt; }
   public Instant getUpdatedAt() { return updatedAt; }
@@ -68,7 +71,7 @@ public class GoalResponse {
   public void setTitle(String title) { this.title = title; }
   public void setDescription(String description) { this.description = description; }
   public void setDueDate(String dueDate) { this.dueDate = dueDate; }
-  public void setStatus(models.GoalStatus status) { this.status = status; }
+  public void setStatus(GoalStatus status) { this.status = status; }
   public void setLatestPercentage(int latestPercentage) { this.latestPercentage = latestPercentage; }
   public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
   public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }

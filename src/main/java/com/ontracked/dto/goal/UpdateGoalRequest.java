@@ -1,5 +1,6 @@
 package com.ontracked.dto.goal;
 
+import com.ontracked.model.GoalStatus;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -14,7 +15,7 @@ public class UpdateGoalRequest {
   /** ISO-8601 yyyy-MM-dd; optional. */
   private String dueDate;
   /** optional status change */
-  private models.GoalStatus status;
+  private GoalStatus status;
   /** optional progress update; 0..100 */
   @Min(0) @Max(100) private Integer latestPercentage;
   /** optional optimistic-locking guard */
@@ -24,7 +25,7 @@ public class UpdateGoalRequest {
 
   public UpdateGoalRequest(
           String id, String parentId, String title, String description, String dueDate,
-          models.GoalStatus status, Integer latestPercentage, Integer expectedVersion) {
+          GoalStatus status, Integer latestPercentage, Integer expectedVersion) {
     this.id = id;
     this.parentId = parentId;
     this.title = title;
@@ -45,8 +46,8 @@ public class UpdateGoalRequest {
   public void setDescription(String description) { this.description = description; }
   public String getDueDate() { return dueDate; }
   public void setDueDate(String dueDate) { this.dueDate = dueDate; }
-  public models.GoalStatus getStatus() { return status; }
-  public void setStatus(models.GoalStatus status) { this.status = status; }
+  public GoalStatus getStatus() { return status; }
+  public void setStatus(GoalStatus status) { this.status = status; }
   public Integer getLatestPercentage() { return latestPercentage; }
   public void setLatestPercentage(Integer latestPercentage) { this.latestPercentage = latestPercentage; }
   public Integer getExpectedVersion() { return expectedVersion; }
