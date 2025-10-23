@@ -31,4 +31,31 @@ public class UserResponse {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
+
+    /**
+     * Getters.
+     */
+    public int getId() {
+        return id;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public LocalDate getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDate getUpdatedAt() {
+        return updatedAt;
+    }
 }
