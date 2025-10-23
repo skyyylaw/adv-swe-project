@@ -1,6 +1,6 @@
 package com.ontracked.dto.checkin;
 
-import models.CheckIn;
+import com.ontracked.model.CheckIn;
 
 import java.time.LocalDateTime;
 
@@ -8,6 +8,8 @@ public class CheckInRequest {
     private Long goalId;
     private LocalDateTime checkInDate;
     private String notes;
+
+    // Constructors, Getters, and Setters for checkin request
 
     public CheckInRequest() {
     }

@@ -1,6 +1,6 @@
 package com.ontracked.dto.checkin;
 
-import models.CheckIn;
+import com.ontracked.model.CheckIn;
 
 import java.time.LocalDateTime;
 
@@ -10,6 +10,9 @@ public class CheckInResponse {
     private LocalDateTime checkInDate;
     private String notes;
 
+
+    // Constructors, Getters, and Setters for checkin response
+    
     public CheckInResponse() {
     }
 
