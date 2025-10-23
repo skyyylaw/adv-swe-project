@@ -1,9 +1,9 @@
 package com.ontracked.dto.progress;
 
+import com.ontracked.model.ProgressUpdate;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import models.ProgressUpdate;
 
 /**
  * Request DTO for creating or updating a progress update

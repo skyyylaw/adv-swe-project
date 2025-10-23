@@ -1,6 +1,6 @@
 package com.ontracked.dto.checkin;
 
-import models.CheckIn;
+import com.ontracked.model.CheckIn;
 
 import java.time.LocalDateTime;
 

@@ -1,6 +1,7 @@
 package com.ontracked.dto.progress;
 
-import models.ProgressUpdate;
+
+import com.ontracked.model.ProgressUpdate;
 
 import java.time.Instant;
 
