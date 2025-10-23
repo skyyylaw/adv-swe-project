@@ -11,7 +11,7 @@
     </parent>
 
     <groupId>com.ontracked</groupId>
-    <artifactId>ontracked</artifactId> <!-- artifactId should be lowercase -->
+    <artifactId>ontracked</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <name>OnTrackED</name>
     <description>OnTrackED — educational progress tracking service</description>
@@ -42,11 +42,13 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- JSON Serialization -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.11.0</version>
         </dependency>
+
         <!-- JUnit 5 for unit testing -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -54,14 +56,12 @@
             <version>5.10.1</version>
             <scope>test</scope>
         </dependency>
-    </dependencies>
 
-        <!-- Optional: Lombok (remove if you don't use it) -->
-        <!--
+        <!-- Optional: Lombok (uncomment if you use it)
         <dependency>
-          <groupId>org.projectlombok</groupId>
-          <artifactId>lombok</artifactId>
-          <optional>true</optional>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
         </dependency>
         -->
     </dependencies>
@@ -71,7 +71,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <!-- No mainClass needed if you have com.ontracked.OnTrackEDApplication -->
             </plugin>
         </plugins>
     </build>
