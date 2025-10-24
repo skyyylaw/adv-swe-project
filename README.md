@@ -301,6 +301,11 @@ The application uses the following configuration files:
    mvn test jacoco:report
    ```
 
+4. **Run style checks**:
+   ```bash
+   mvn checkstyle:check
+   ```
+
 ### Test Structure
 
 The project includes comprehensive tests for:
