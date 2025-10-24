@@ -78,7 +78,7 @@ public void updateCheckIn(CheckIn updatedCheckIn) {
   }
 
   // Helper methods for CSV loading
-  private void loadFromCsv() {
+  protected void loadFromCsv() {
     try {
       URL resourceUrl = Thread.currentThread().getContextClassLoader().getResource(CSV_FILE_PATH);
       if (resourceUrl == null) {
@@ -121,7 +121,7 @@ public void updateCheckIn(CheckIn updatedCheckIn) {
     }
   }
   // Helper methods for CSV saving
-  private void saveToCsv() {
+  protected void saveToCsv() {
     try {
       URL resourceUrl = Thread.currentThread().getContextClassLoader().getResource(CSV_FILE_PATH);
       if (resourceUrl == null) {
