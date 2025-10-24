@@ -33,6 +33,7 @@ public class CheckInController {
    */
   @GetMapping
   public ResponseEntity<?> getAllCheckIns() {
+    System.out.println("Fetching all check-ins.");
     try {
       ArrayList<CheckInResponse> responses = new ArrayList<>();
       for (CheckIn c : mockCheckInService.getCheckIns()) {
@@ -54,6 +55,7 @@ public class CheckInController {
    */
   @GetMapping("/{id}")
   public ResponseEntity<?> getCheckInById(@PathVariable Long id) {
+    System.out.println("Fetching check-in with ID: " + id);
     for (CheckIn c : mockCheckInService.getCheckIns()) {
       if (c.getId().equals(id)) {
         return new ResponseEntity<>(CheckInResponse.toResponse(c), HttpStatus.OK);
@@ -71,6 +73,7 @@ public class CheckInController {
    */
   @PostMapping
   public ResponseEntity<?> createCheckIn(@RequestBody CheckInRequest request) {
+    System.out.println("Create request received: " + request);
     try {
       CheckIn newCheckIn = CheckInRequest.toEntity(request);
       mockCheckInService.addCheckIn(newCheckIn);
@@ -91,6 +94,7 @@ public class CheckInController {
    */
   @PatchMapping("/{id}")
   public ResponseEntity<?> updateCheckIn(@PathVariable Long id, @RequestBody CheckInRequest request) {
+    System.out.println("Update request received for ID " + id);
     try {
       for (CheckIn existing : mockCheckInService.getCheckIns()) {
         if (existing.getId().equals(id)) {
@@ -115,6 +119,7 @@ public class CheckInController {
    */
   @GetMapping("/index")
   public String index() {
+    System.out.println("CheckInController index endpoint called.");
     return "Welcome to the CheckIn API! Use /checkins to view all or POST to create new check-ins.";
   }
 }

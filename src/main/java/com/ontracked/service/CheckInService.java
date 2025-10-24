@@ -19,7 +19,7 @@ import java.util.List;
 public class CheckInService {
 
   private final String CSV_FILE_PATH = "localGoalDB.csv"; // resource filename
-  private ArrayList<CheckIn> checkIns;
+  private List<CheckIn> checkIns;
 
 
   public CheckInService() {
@@ -32,7 +32,7 @@ public class CheckInService {
    * Get all stored check-ins.
    * @return A list of all CheckIn objects.
    */
-  public ArrayList<CheckIn> getCheckIns() {
+  public List<CheckIn> getCheckIns() {
     return checkIns;
   }
 
@@ -59,27 +59,18 @@ public class CheckInService {
    * Update an existing CheckIn in the storage.
    * @param updatedCheckIn The CheckIn object with updated data.
    */
-  public void updateCheckIn(CheckIn updatedCheckIn) {
-    List<CheckIn> tmpList = new ArrayList<>();
-    boolean updated = false;
-
-    for (CheckIn checkIn : checkIns) {
-      if (checkIn.getId().equals(updatedCheckIn.getId())) {
-        updatedCheckIn.setUpdatedAt(LocalDateTime.now());
-        tmpList.add(updatedCheckIn);
-        updated = true;
-      } else {
-        tmpList.add(checkIn);
-      }
+public void updateCheckIn(CheckIn updatedCheckIn) {
+    for (int i = 0; i < checkIns.size(); i++) {
+        CheckIn c = checkIns.get(i);
+        if (c.getId().equals(updatedCheckIn.getId())) {
+            updatedCheckIn.setUpdatedAt(LocalDateTime.now());
+            checkIns.set(i, updatedCheckIn);
+            saveToCsv();
+            return;
+        }
     }
-
-    if (updated) {
-      this.checkIns = new ArrayList<>(tmpList);
-      saveToCsv();
-    } else {
-      System.err.println("No CheckIn found with ID " + updatedCheckIn.getId());
-    }
-  }
+    System.err.println("No CheckIn found with ID " + updatedCheckIn.getId());
+}
 
   
   public void printCheckIns() {
