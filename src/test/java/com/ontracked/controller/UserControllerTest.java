@@ -110,13 +110,6 @@ class UserControllerTest {
      * Tests GET / endpoint with typical valid input.
      * Verifies that the endpoint returns a list of users in JSON format.
      * Tests successful case where service returns multiple users from CSV data.
-     * 
-     * Expected behavior:
-     * - HTTP 200 OK status
-     * - Content-Type: application/json
-     * - Response body contains array of 2 users
-     * - User data matches expected values from test fixtures
-     * - Service method is called exactly once
      */
     @Test
     @DisplayName("GET / - Typical valid: Returns list of users")
