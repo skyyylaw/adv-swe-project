@@ -413,8 +413,8 @@ This project utilized AI assistance during development to enhance code quality a
 ### Components Developed with AI Assistance
 
 - **Goal Data Model**: The complete Goal class implementation including validation, defensive programming, and robust error handling
-- **API Endpoints**: All goal-related REST endpoints in the GoalController with proper request/response handling
-- **Service Layer**: The GoalService implementation for data persistence and retrieval operations
+- **API Endpoints**: All REST endpoints in the Controllers with proper request/response handling
+- **Service Layer**: The UserService and GoalService implementation for data persistence and retrieval operations
 - **Test Cases**: Comprehensive test suite including unit tests, integration tests, and validation tests
 
 ### AI Contribution Details
