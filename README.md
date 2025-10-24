@@ -210,6 +210,88 @@ OnTrackED is a Spring Boot-based REST API service designed for tracking educatio
 }
 ```
 
+### Progress Update Management Endpoints
+
+#### GET `/progress`
+**Description**: Retrieves all progress updates from the system.
+
+**Input**: None
+
+**Output**:
+- **Success (200 OK)**: Array of ProgressUpdateResponse objects
+- **Error (500 Internal Server Error)**: Error message if retrieval fails
+
+#### GET `/progress/{id}`
+**Description**: Retrieves a specific progress update by its ID.
+
+**Input**:
+- `id` (path parameter): Long - progress update ID
+
+**Output**:
+- **Success (200 OK)**: ProgressUpdateResponse object
+- **Error (404 Not Found)**: If progress update doesn't exist
+
+#### GET `/progress/goal/{goalId}`
+**Description**: Retrieves all progress updates for a specific goal.
+
+**Input**:
+- `goalId` (path parameter): Long - goal ID
+
+**Output**:
+- **Success (200 OK)**: Array of ProgressUpdateResponse objects
+- **Error (500 Internal Server Error)**: Error message if retrieval fails
+
+#### POST `/progress`
+**Description**: Creates a new progress update.
+
+**Input**: ProgressUpdateRequest object
+```json
+{
+  "goalId": 123,
+  "percentComplete": 75,
+  "note": "Made good progress today"
+}
+```
+
+**Output**:
+- **Success (201 Created)**: ProgressUpdateResponse object
+- **Error (400 Bad Request)**: If goalId is null or percentComplete is out of range (0-100)
+- **Error (500 Internal Server Error)**: Error message if creation fails
+
+#### PUT `/progress/{id}`
+**Description**: Updates an existing progress update.
+
+**Input**:
+- `id` (path parameter): Long - progress update ID to update
+- ProgressUpdateRequest object (same structure as POST)
+
+**Output**:
+- **Success (200 OK)**: Updated ProgressUpdateResponse object
+- **Error (404 Not Found)**: If progress update doesn't exist
+- **Error (400 Bad Request)**: If percentComplete is out of range
+- **Error (500 Internal Server Error)**: Error message if update fails
+
+#### DELETE `/progress/{id}`
+**Description**: Deletes a progress update by its ID.
+
+**Input**:
+- `id` (path parameter): Long - progress update ID to delete
+
+**Output**:
+- **Success (200 OK)**: Success message
+- **Error (404 Not Found)**: If progress update doesn't exist
+
+**ProgressUpdateResponse Object Structure**:
+```json
+{
+  "id": 1,
+  "goalId": 123,
+  "percentComplete": 75,
+  "note": "Made good progress today",
+  "timestamp": "2024-01-01T10:00:00Z"
+}
+```
+
 ### API Ordering and Dependencies
 
 The API endpoints are designed to be stateless and can be called in any order. However, for optimal usage:
@@ -217,8 +299,9 @@ The API endpoints are designed to be stateless and can be called in any order. H
 1. **User Management**: Create users first before creating goals or check-ins
 2. **Goal Management**: Goals can be created independently but may reference user IDs
 3. **Check-In Management**: Check-ins should reference existing goal IDs
+4. **Progress Update Management**: Progress updates should reference existing goal IDs
 
-No specific ordering is required between different endpoint categories, but logical dependencies exist (e.g., check-ins should reference existing goals).
+No specific ordering is required between different endpoint categories, but logical dependencies exist (e.g., check-ins and progress updates should reference existing goals).
 
 ## Build and Run Instructions
 
