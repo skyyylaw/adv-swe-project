@@ -1,218 +1,125 @@
 //package com.ontracked.controller;
 //
 //import com.fasterxml.jackson.databind.ObjectMapper;
-//import com.fasterxml.jackson.databind.SerializationFeature;
-//import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 //import com.ontracked.model.Goal;
 //import com.ontracked.model.GoalStatus;
 //import com.ontracked.service.GoalService;
-//import org.junit.jupiter.api.BeforeEach;
+//import org.junit.jupiter.api.DisplayName;
 //import org.junit.jupiter.api.Test;
-//import org.mockito.ArgumentCaptor;
+//import org.mockito.ArgumentMatchers;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 //import org.springframework.boot.test.mock.mockito.MockBean;
 //import org.springframework.http.MediaType;
 //import org.springframework.test.web.servlet.MockMvc;
 //
-//import java.util.ArrayList;
 //import java.util.List;
 //import java.util.UUID;
 //
-//import static org.hamcrest.Matchers.*;
-//import static org.mockito.Mockito.*;
-//import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+//import static org.mockito.Mockito.doNothing;
+//import static org.mockito.Mockito.when;
+//import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+//import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 //import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 //
-//@WebMvcTest(GoalController.class)
+//@WebMvcTest(controllers = GoalController.class)
 //class GoalControllerTest {
 //
-//  @Autowired
-//  private MockMvc mockMvc;
+//  @Autowired private MockMvc mockMvc;
+//  @Autowired private ObjectMapper objectMapper;
 //
-//  @MockBean
-//  private GoalService goalService;
+//  @MockBean private GoalService goalService;
 //
-//  private ObjectMapper mapper;
-//  private Goal goal1, goal2;
-//
-//  @BeforeEach
-//  void setUp() {
-//    mapper = new ObjectMapper();
-//    mapper.registerModule(new JavaTimeModule());
-//    mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-//
-//    goal1 = new Goal("Alice");
-//    goal1.setId(UUID.randomUUID().toString());
-//    goal1.setTitle("Finish MVP");
-//    goal1.setStatus(GoalStatus.ACTIVE);
-//
-//    goal2 = new Goal("Bob");
-//    goal2.setId(UUID.randomUUID().toString());
-//    goal2.setTitle("Ship Beta");
-//    goal2.setStatus(GoalStatus.ACTIVE);
+//  private Goal sampleGoal() {
+//    Goal g = new Goal("owner-1");
+//    g.setId(UUID.randomUUID().toString());
+//    g.setTitle("Title");
+//    g.setDescription("Desc");
+//    g.setStatus(GoalStatus.ACTIVE);
+//    g.setLatestPercentage(30);
+//    return g;
 //  }
 //
-//  // --- GET /goal/getAllGoals ---
 //  @Test
-//  void testGetAllGoals_validTypical() throws Exception {
-//    when(goalService.loadGoals()).thenReturn(List.of(goal1, goal2));
-//
-//    mockMvc.perform(get("/goal/getAllGoals").accept(MediaType.APPLICATION_JSON))
+//  @DisplayName("GET /goal/index returns plain text")
+//  void index() throws Exception {
+//    mockMvc.perform(get("/goal/index"))
 //            .andExpect(status().isOk())
-//            .andExpect(jsonPath("$", hasSize(2)))
-//            .andExpect(jsonPath("$[0].ownerId", is("Alice")));
-//
-//    verify(goalService, times(1)).loadGoals();
+//            .andExpect(content().string("Goal Controller"));
 //  }
 //
 //  @Test
-//  void testGetAllGoals_emptyListAtypical() throws Exception {
-//    when(goalService.loadGoals()).thenReturn(List.of());
+//  @DisplayName("GET /goal/getAllGoals returns list")
+//  void getAllGoals_ok() throws Exception {
+//    List<Goal> goals = List.of(sampleGoal(), sampleGoal());
+//    when(goalService.loadGoals()).thenReturn(goals);
 //
 //    mockMvc.perform(get("/goal/getAllGoals"))
 //            .andExpect(status().isOk())
-//            .andExpect(jsonPath("$", hasSize(0)));
-//
-//    verify(goalService, times(1)).loadGoals();
+//            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+//            .andExpect(jsonPath("$.length()").value(2));
 //  }
 //
 //  @Test
-//  void testGetAllGoals_internalErrorInvalid() throws Exception {
-//    when(goalService.loadGoals()).thenThrow(new RuntimeException("I/O failed"));
+//  @DisplayName("GET /goal/getAllGoals handles service error")
+//  void getAllGoals_error() throws Exception {
+//    when(goalService.loadGoals()).thenThrow(new RuntimeException("boom"));
 //
 //    mockMvc.perform(get("/goal/getAllGoals"))
-//            .andExpect(status().isInternalServerError());
+//            .andExpect(status().isInternalServerError())
+//            .andExpect(content().string(org.hamcrest.Matchers.containsString("Failed to load goals")));
 //  }
 //
-//  // --- GET /goal/retrieveOneGoal?id= ---
 //  @Test
-//  void testRetrieveOneGoal_foundTypical() throws Exception {
-//    when(goalService.retrieveGoal(goal1.getId())).thenReturn(goal1);
+//  @DisplayName("GET /goal/retrieveOneGoal returns 200 when found")
+//  void retrieveOneGoal_found() throws Exception {
+//    Goal g = sampleGoal();
+//    when(goalService.retrieveGoal(g.getId())).thenReturn(g);
 //
-//    mockMvc.perform(get("/goal/retrieveOneGoal?id=" + goal1.getId()))
+//    mockMvc.perform(get("/goal/retrieveOneGoal").param("id", g.getId()))
 //            .andExpect(status().isOk())
-//            .andExpect(jsonPath("$.ownerId", is("Alice")));
+//            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+//            .andExpect(jsonPath("$.id").value(g.getId()))
+//            .andExpect(jsonPath("$.ownerId").value("owner-1"));
 //  }
 //
 //  @Test
-//  void testRetrieveOneGoal_notFoundInvalid() throws Exception {
-//    when(goalService.retrieveGoal("missing-id")).thenReturn(null);
+//  @DisplayName("GET /goal/retrieveOneGoal returns 404 when missing")
+//  void retrieveOneGoal_missing() throws Exception {
+//    when(goalService.retrieveGoal("nope")).thenReturn(null);
 //
-//    mockMvc.perform(get("/goal/retrieveOneGoal?id=missing-id"))
+//    mockMvc.perform(get("/goal/retrieveOneGoal").param("id", "nope"))
 //            .andExpect(status().isNotFound());
 //  }
 //
 //  @Test
-//  void testRetrieveOneGoal_blankIdAtypical() throws Exception {
-//    mockMvc.perform(get("/goal/retrieveOneGoal?id="))
-//            .andExpect(status().isNotFound()); // current controller returns 404 for blank
-//  }
+//  @DisplayName("POST /goal/saveOneGoal accepts a Goal and echoes list")
+//  void saveOneGoal_ok() throws Exception {
+//    Goal g = sampleGoal();
+//    doNothing().when(goalService).saveGoals(ArgumentMatchers.anyList());
 //
-//  // --- POST /goal/saveOneGoal ---
-//  @Test
-//  void testSaveOneGoal_validTypical() throws Exception {
-//    String payload = mapper.writeValueAsString(goal1);
-//
-//    mockMvc.perform(post("/goal/saveOneGoal")
-//                    .contentType(MediaType.APPLICATION_JSON)
-//                    .content(payload))
+//    mockMvc.perform(
+//                    post("/goal/saveOneGoal")
+//                            .contentType(MediaType.APPLICATION_JSON)
+//                            .content(objectMapper.writeValueAsString(g)))
 //            .andExpect(status().isOk())
-//            .andExpect(jsonPath("$[0].ownerId", is("Alice")));
-//
-//    @SuppressWarnings("unchecked")
-//    ArgumentCaptor<List<Goal>> captor = ArgumentCaptor.forClass(List.class);
-//    verify(goalService, times(1)).saveGoals(captor.capture());
-//    assert captor.getValue().get(0).getOwnerId().equals("Alice");
+//            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+//            .andExpect(jsonPath("$.length()").value(1))
+//            .andExpect(jsonPath("$[0].ownerId").value("owner-1"));
 //  }
 //
 //  @Test
-//  void testSaveOneGoal_atypicalEmptyTitle() throws Exception {
-//    Goal g = new Goal("Alice");
-//    g.setTitle("");
-//    String payload = mapper.writeValueAsString(g);
+//  @DisplayName("POST /goal/saveMultipleGoals accepts list and echoes it")
+//  void saveMultipleGoals_ok() throws Exception {
+//    List<Goal> goals = List.of(sampleGoal(), sampleGoal());
+//    doNothing().when(goalService).saveGoals(ArgumentMatchers.anyList());
 //
-//    mockMvc.perform(post("/goal/saveOneGoal")
-//                    .contentType(MediaType.APPLICATION_JSON)
-//                    .content(payload))
+//    mockMvc.perform(
+//                    post("/goal/saveMultipleGoals")
+//                            .contentType(MediaType.APPLICATION_JSON)
+//                            .content(objectMapper.writeValueAsString(goals)))
 //            .andExpect(status().isOk())
-//            .andExpect(jsonPath("$[0].ownerId", is("Alice")));
-//  }
-//
-//  @Test
-//  void testSaveOneGoal_invalidMissingOwner() throws Exception {
-//    String invalidJson = """
-//        { "id": "abc123", "title": "Missing owner" }
-//        """;
-//
-//    mockMvc.perform(post("/goal/saveOneGoal")
-//                    .contentType(MediaType.APPLICATION_JSON)
-//                    .content(invalidJson))
-//            .andExpect(status().isBadRequest());
-//  }
-//
-//  // --- POST /goal/saveMultipleGoals ---
-//  @Test
-//  void testSaveMultipleGoals_twoClientsTypical() throws Exception {
-//    List<Goal> payloadList = List.of(goal1, goal2);
-//    String payload = mapper.writeValueAsString(payloadList);
-//
-//    mockMvc.perform(post("/goal/saveMultipleGoals")
-//                    .contentType(MediaType.APPLICATION_JSON)
-//                    .content(payload))
-//            .andExpect(status().isOk())
-//            .andExpect(jsonPath("$", hasSize(2)))
-//            .andExpect(jsonPath("$[0].ownerId", is("Alice")))
-//            .andExpect(jsonPath("$[1].ownerId", is("Bob")));
-//
-//    verify(goalService, times(1)).saveGoals(anyList());
-//  }
-//
-//  @Test
-//  void testSaveMultipleGoals_emptyListAtypical() throws Exception {
-//    String payload = mapper.writeValueAsString(List.of());
-//
-//    mockMvc.perform(post("/goal/saveMultipleGoals")
-//                    .contentType(MediaType.APPLICATION_JSON)
-//                    .content(payload))
-//            .andExpect(status().isOk())
-//            .andExpect(jsonPath("$", hasSize(0)));
-//  }
-//
-//  @Test
-//  void testSaveMultipleGoals_invalidMalformedJson() throws Exception {
-//    mockMvc.perform(post("/goal/saveMultipleGoals")
-//                    .contentType(MediaType.APPLICATION_JSON)
-//                    .content("{bad json"))
-//            .andExpect(status().is4xxClientError());
-//  }
-//
-//  // --- Integration-style test (write + read flow) ---
-//  @Test
-//  void testWriteThenReadFlow() throws Exception {
-//    when(goalService.loadGoals()).thenReturn(List.of(goal1));
-//    when(goalService.retrieveGoal(goal1.getId())).thenReturn(goal1);
-//
-//    mockMvc.perform(post("/goal/saveOneGoal")
-//                    .contentType(MediaType.APPLICATION_JSON)
-//                    .content(mapper.writeValueAsString(goal1)))
-//            .andExpect(status().isOk());
-//
-//    mockMvc.perform(get("/goal/retrieveOneGoal?id=" + goal1.getId()))
-//            .andExpect(status().isOk())
-//            .andExpect(jsonPath("$.ownerId", is("Alice")));
-//  }
-//
-//  // --- Logging verification ---
-//  @Test
-//  void testSaveGoals_loggedOncePerCall() throws Exception {
-//    String payload = mapper.writeValueAsString(goal1);
-//
-//    mockMvc.perform(post("/goal/saveOneGoal")
-//                    .contentType(MediaType.APPLICATION_JSON)
-//                    .content(payload))
-//            .andExpect(status().isOk());
-//
-//    verify(goalService, times(1)).saveGoals(anyList());
+//            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+//            .andExpect(jsonPath("$.length()").value(2));
 //  }
 //}
