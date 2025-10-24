@@ -5,9 +5,13 @@ import com.ontracked.dto.checkin.CheckInRequest;
 import com.ontracked.dto.checkin.CheckInResponse;
 import com.ontracked.service.CheckInService;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 
@@ -19,11 +23,22 @@ import java.util.ArrayList;
 @RequestMapping("/checkins")
 public class CheckInController {
 
+  private static final Logger logger = LoggerFactory.getLogger(CheckInController.class); 
   private final CheckInService mockCheckInService;
 
   public CheckInController(CheckInService mockCheckInService) {
     this.mockCheckInService = mockCheckInService;
   }
+
+  private void logRequest(HttpServletRequest request, String endpoint) {
+    logger.info(
+            "Timestamp: {}, Origin: {}, Method: {}, Endpoint: {}",
+            java.time.Instant.now(),
+            request.getMethod(),
+            endpoint
+    );
+  }
+
 
   /**
    * Returns a list of all stored check-ins.
@@ -32,8 +47,8 @@ public class CheckInController {
    *         with an HTTP 200 response if successful, or a message with an HTTP 500 if failed.
    */
   @GetMapping
-  public ResponseEntity<?> getAllCheckIns() {
-    System.out.println("Fetching all check-ins.");
+  public ResponseEntity<?> getAllCheckIns(HttpServletRequest request) {
+    logRequest(request, "/checkins");
     try {
       ArrayList<CheckInResponse> responses = new ArrayList<>();
       for (CheckIn c : mockCheckInService.getCheckIns()) {
@@ -54,8 +69,8 @@ public class CheckInController {
    *         an HTTP 200 if found, or an error message with HTTP 404 if not found.
    */
   @GetMapping("/{id}")
-  public ResponseEntity<?> getCheckInById(@PathVariable Long id) {
-    System.out.println("Fetching check-in with ID: " + id);
+  public ResponseEntity<?> getCheckInById(@PathVariable Long id, HttpServletRequest request) {
+    logRequest(request, "/checkins/" + id);
     for (CheckIn c : mockCheckInService.getCheckIns()) {
       if (c.getId().equals(id)) {
         return new ResponseEntity<>(CheckInResponse.toResponse(c), HttpStatus.OK);
@@ -72,10 +87,11 @@ public class CheckInController {
    *         an HTTP 201 if successful, or an error message with HTTP 500 if failed.
    */
   @PostMapping
-  public ResponseEntity<?> createCheckIn(@RequestBody CheckInRequest request) {
-    System.out.println("Create request received: " + request);
+  public ResponseEntity<?> createCheckIn(@RequestBody CheckInRequest checkInRequest, HttpServletRequest request) {
+    logRequest(request, "/checkins");
+    System.out.println("Create request received: " + checkInRequest);
     try {
-      CheckIn newCheckIn = CheckInRequest.toEntity(request);
+      CheckIn newCheckIn = CheckInRequest.toEntity(checkInRequest);
       mockCheckInService.addCheckIn(newCheckIn);
       return new ResponseEntity<>(CheckInResponse.toResponse(newCheckIn), HttpStatus.CREATED);
     } catch (Exception e) {
@@ -93,14 +109,14 @@ public class CheckInController {
    *         an HTTP 200 if successful, or HTTP 404 if not found.
    */
   @PatchMapping("/{id}")
-  public ResponseEntity<?> updateCheckIn(@PathVariable Long id, @RequestBody CheckInRequest request) {
-    System.out.println("Update request received for ID " + id);
+  public ResponseEntity<?> updateCheckIn(@PathVariable Long id, @RequestBody CheckInRequest checkInRequest, HttpServletRequest request) {
+    logRequest(request, "/checkins/" + id);
     try {
       for (CheckIn existing : mockCheckInService.getCheckIns()) {
         if (existing.getId().equals(id)) {
-          existing.setGoalId(request.getGoalId());
-          existing.setCheckInDate(request.getCheckInDate());
-          existing.setNotes(request.getNotes());
+          existing.setGoalId(checkInRequest.getGoalId());
+          existing.setCheckInDate(checkInRequest.getCheckInDate());
+          existing.setNotes(checkInRequest.getNotes());
           mockCheckInService.updateCheckIn(existing);
           return new ResponseEntity<>(CheckInResponse.toResponse(existing), HttpStatus.OK);
         }
@@ -118,8 +134,8 @@ public class CheckInController {
    * @return A message indicating that the CheckIn API is running.
    */
   @GetMapping("/index")
-  public String index() {
-    System.out.println("CheckInController index endpoint called.");
+  public String index(HttpServletRequest request) {
+    logRequest(request, "/checkins/index");
     return "Welcome to the CheckIn API! Use /checkins to view all or POST to create new check-ins.";
   }
 }
