@@ -7,6 +7,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import jakarta.servlet.http.HttpServletRequest;
 import com.ontracked.service.CheckInService;
 import com.ontracked.controller.CheckInController;
 import com.ontracked.dto.checkin.CheckInRequest;
@@ -19,9 +22,12 @@ public class CheckInTests {
 
   private CheckInService service;
   private CheckInController controller;
+  @Mock
+  private HttpServletRequest mockRequest;
 
   @BeforeEach
   public void setup() {
+    MockitoAnnotations.openMocks(this);
     service = new CheckInService();
     controller = new CheckInController(service);
   }
@@ -118,7 +124,7 @@ public class CheckInTests {
   @DisplayName("API: createCheckIn typical valid input")
   public void testCreateCheckInTypical() {
     CheckInRequest request = new CheckInRequest(201L, LocalDateTime.now(), "Feeling great!");
-    ResponseEntity<?> response = controller.createCheckIn(request);
+    ResponseEntity<?> response = controller.createCheckIn(request, mockRequest);
     assertEquals(201, response.getStatusCode().value());
     assertTrue(response.getBody() instanceof CheckInResponse);
   }
@@ -130,7 +136,7 @@ public class CheckInTests {
   @DisplayName("API: createCheckIn atypical valid input (empty notes)")
   public void testCreateCheckInAtypical() {
     CheckInRequest request = new CheckInRequest(202L, LocalDateTime.now(), "");
-    ResponseEntity<?> response = controller.createCheckIn(request);
+    ResponseEntity<?> response = controller.createCheckIn(request, mockRequest);
     assertEquals(201, response.getStatusCode().value());
   }
 
@@ -140,7 +146,7 @@ public class CheckInTests {
   @Test
   @DisplayName("API: createCheckIn invalid input (null request)")
   public void testCreateCheckInInvalid() {
-    ResponseEntity<?> response = controller.createCheckIn(null);
+    ResponseEntity<?> response = controller.createCheckIn(null, mockRequest);
     assertEquals(500, response.getStatusCode().value());
   }
 
@@ -151,9 +157,9 @@ public class CheckInTests {
   @DisplayName("API: getCheckInById typical valid input")
   public void testGetCheckInByIdTypical() {
     CheckInRequest request = new CheckInRequest(301L, LocalDateTime.now(), "Daily update");
-    controller.createCheckIn(request);
+    controller.createCheckIn(request, mockRequest);
     CheckIn first = service.getCheckIns().get(0);
-    ResponseEntity<?> response = controller.getCheckInById(first.getId());
+    ResponseEntity<?> response = controller.getCheckInById(first.getId(), mockRequest);
     assertEquals(200, response.getStatusCode().value());
   }
 
@@ -164,7 +170,7 @@ public class CheckInTests {
   @Test
   @DisplayName("API: getCheckInById atypical valid input (nonexistent but numeric ID)")
   public void testGetCheckInByIdAtypical() {
-    ResponseEntity<?> response = controller.getCheckInById(9999L);
+    ResponseEntity<?> response = controller.getCheckInById(9999L, mockRequest);
     assertEquals(404, response.getStatusCode().value());
   }
 
@@ -174,7 +180,7 @@ public class CheckInTests {
   @Test
   @DisplayName("API: getCheckInById invalid input (null ID)")
   public void testGetCheckInByIdInvalid() {
-    ResponseEntity<?> response = controller.getCheckInById(999L);
+    ResponseEntity<?> response = controller.getCheckInById(999L, mockRequest);
 
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     assertEquals("CheckIn not found.", response.getBody());
@@ -188,10 +194,10 @@ public class CheckInTests {
   @DisplayName("API: updateCheckIn typical valid input")
   public void testUpdateCheckInAPITypical() {
     CheckInRequest request = new CheckInRequest(401L, LocalDateTime.now(), "Initial note");
-    controller.createCheckIn(request);
+    controller.createCheckIn(request, mockRequest);
     CheckIn existing = service.getCheckIns().get(0);
     CheckInRequest updateRequest = new CheckInRequest(existing.getGoalId(), existing.getCheckInDate(), "Updated note");
-    ResponseEntity<?> response = controller.updateCheckIn(existing.getId(), updateRequest);
+    ResponseEntity<?> response = controller.updateCheckIn(existing.getId(), updateRequest, mockRequest);
     assertEquals(200, response.getStatusCode().value());
   }
   /**
@@ -201,10 +207,10 @@ public class CheckInTests {
   @DisplayName("API: updateCheckIn atypical valid input (empty notes)")
   public void testUpdateCheckInAPIAtypical() {
     CheckInRequest request = new CheckInRequest(402L, LocalDateTime.now(), "");
-    controller.createCheckIn(request);
+    controller.createCheckIn(request, mockRequest);
     CheckIn existing = service.getCheckIns().get(0);
     CheckInRequest updateRequest = new CheckInRequest(existing.getGoalId(), existing.getCheckInDate(), "");
-    ResponseEntity<?> response = controller.updateCheckIn(existing.getId(), updateRequest);
+    ResponseEntity<?> response = controller.updateCheckIn(existing.getId(), updateRequest, mockRequest);
     assertEquals(200, response.getStatusCode().value());
   }
 
@@ -215,7 +221,7 @@ public class CheckInTests {
   @DisplayName("API: updateCheckIn invalid input (nonexistent ID)")
   public void testUpdateCheckInAPIInvalid() {
     CheckInRequest updateRequest = new CheckInRequest(999L, LocalDateTime.now(), "No such entry");
-    ResponseEntity<?> response = controller.updateCheckIn(9999L, updateRequest);
+    ResponseEntity<?> response = controller.updateCheckIn(9999L, updateRequest, mockRequest);
     assertEquals(404, response.getStatusCode().value());
   }
 }
