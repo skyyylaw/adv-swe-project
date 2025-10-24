@@ -17,6 +17,9 @@ public class UserService {
     private static final String FILE_PATH = "users.csv";
     private ArrayList<User> users;
 
+    /**
+     * Basic constructor.
+     */
     public UserService() {
     }
 
