@@ -30,6 +30,9 @@ public class CheckInTests {
   // Unit tests
  
 
+  /**
+   * Unit test for addCheckIn with typical valid input
+   */
   @Test
   @DisplayName("Unit: addCheckIn with typical valid input")
   public void testAddCheckInTypical() {
@@ -38,6 +41,9 @@ public class CheckInTests {
     assertTrue(service.getCheckIns().contains(checkIn));
   }
 
+  /**
+   * Unit test for addCheckIn with atypical valid input (missing date)
+   */
   @Test
   @DisplayName("Unit: addCheckIn with atypical valid input (missing date)")
   public void testAddCheckInAtypical() {
@@ -46,6 +52,9 @@ public class CheckInTests {
     assertNotNull(checkIn.getCheckInDate(), "Check-in date should be auto-filled");
   }
 
+  /**
+   * Unit test for addCheckIn with invalid input (null object)
+   */
   @Test
   @DisplayName("Unit: addCheckIn with invalid input (null object)")
   public void testAddCheckInInvalid() {
@@ -54,6 +63,9 @@ public class CheckInTests {
     });
   }
 
+  /**
+   * Unit test for updateCheckIn with typical valid input
+   */
   @Test
   @DisplayName("Unit: updateCheckIn with existing ID")
   public void testUpdateCheckInTypical() {
@@ -71,6 +83,9 @@ public class CheckInTests {
 );
   }
 
+  /**
+   * Unit test for updateCheckIn with atypical valid input (empty notes)
+   */
   @Test
   @DisplayName("Unit: updateCheckIn with atypical valid input (empty notes)")
   public void testUpdateCheckInAtypical() {
@@ -81,6 +96,9 @@ public class CheckInTests {
     assertEquals("", service.getCheckIns().get(0).getNotes());
   }
 
+  /**
+   * Unit test for updateCheckIn with invalid input (nonexistent ID)
+   */
   @Test
   @DisplayName("Unit: updateCheckIn with invalid ID")
   public void testUpdateCheckInInvalid() {
@@ -93,6 +111,9 @@ public class CheckInTests {
 
   // API tests
 
+  /**
+   * API test for createCheckIn with typical valid input
+   */
   @Test
   @DisplayName("API: createCheckIn typical valid input")
   public void testCreateCheckInTypical() {
@@ -102,6 +123,9 @@ public class CheckInTests {
     assertTrue(response.getBody() instanceof CheckInResponse);
   }
 
+  /**
+   * API test for createCheckIn with atypical valid input (empty notes)
+   */
   @Test
   @DisplayName("API: createCheckIn atypical valid input (empty notes)")
   public void testCreateCheckInAtypical() {
@@ -110,6 +134,9 @@ public class CheckInTests {
     assertEquals(201, response.getStatusCode().value());
   }
 
+  /**
+   * API test for createCheckIn with invalid input (null request)
+   */
   @Test
   @DisplayName("API: createCheckIn invalid input (null request)")
   public void testCreateCheckInInvalid() {
@@ -117,6 +144,9 @@ public class CheckInTests {
     assertEquals(500, response.getStatusCode().value());
   }
 
+  /**
+   * API test for getCheckInById with typical valid input
+   */
   @Test
   @DisplayName("API: getCheckInById typical valid input")
   public void testGetCheckInByIdTypical() {
@@ -127,6 +157,10 @@ public class CheckInTests {
     assertEquals(200, response.getStatusCode().value());
   }
 
+
+  /**
+   * API test for getCheckInById with atypical valid input (nonexistent but numeric ID)
+   */
   @Test
   @DisplayName("API: getCheckInById atypical valid input (nonexistent but numeric ID)")
   public void testGetCheckInByIdAtypical() {
@@ -134,6 +168,9 @@ public class CheckInTests {
     assertEquals(404, response.getStatusCode().value());
   }
 
+  /**
+   * API test for getCheckInById with invalid input (null ID)
+   */
   @Test
   @DisplayName("API: getCheckInById invalid input (null ID)")
   public void testGetCheckInByIdInvalid() {
@@ -142,6 +179,10 @@ public class CheckInTests {
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     assertEquals("CheckIn not found.", response.getBody());
   }
+
+  /**
+   * API test for updateCheckIn with typical valid input
+   */
 
   @Test
   @DisplayName("API: updateCheckIn typical valid input")
@@ -153,7 +194,9 @@ public class CheckInTests {
     ResponseEntity<?> response = controller.updateCheckIn(existing.getId(), updateRequest);
     assertEquals(200, response.getStatusCode().value());
   }
-
+  /**
+   * API test for updateCheckIn with atypical valid input (empty notes)
+   */
   @Test
   @DisplayName("API: updateCheckIn atypical valid input (empty notes)")
   public void testUpdateCheckInAPIAtypical() {
@@ -165,6 +208,9 @@ public class CheckInTests {
     assertEquals(200, response.getStatusCode().value());
   }
 
+  /**
+   * API test for updateCheckIn with invalid input (nonexistent ID)
+   */
   @Test
   @DisplayName("API: updateCheckIn invalid input (nonexistent ID)")
   public void testUpdateCheckInAPIInvalid() {
