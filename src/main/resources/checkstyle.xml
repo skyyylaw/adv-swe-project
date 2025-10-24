@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+        "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+        "https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+<module name="Checker">
+
+    <!-- Global checks -->
+    <module name="LineLength">
+        <property name="max" value="140"/>
+    </module>
+
+    <module name="TreeWalker">
+        <!-- Require braces for control structures -->
+        <module name="NeedBraces"/>
+
+        <!-- Naming conventions -->
+        <module name="MethodName"/>
+        <module name="ParameterName"/>
+
+        <!-- Optional: don't fail on missing Javadoc -->
+        <module name="JavadocMethod">
+            <property name="severity" value="warning"/>
+        </module>
+    </module>
+</module>

@@ -2,31 +2,46 @@ package com.ontracked.controller;
 
 import com.ontracked.model.User;
 import com.ontracked.dto.user.CreateUserRequest;
-import com.ontracked.dto.user.UserResponse;
 import com.ontracked.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
-
-/**
- * REST Controller for managing user-related operations.
- * Provides endpoints for creating, retrieving, and updating user information.
- */
 @RestController
 public class UserController {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+    
+    private void logRequest(HttpServletRequest request, String endpoint) {
+        logger.info(
+                "Timestamp: {}, Origin: {}, Method: {}, Endpoint: {}",
+                java.time.Instant.now(),
+                request.getRemoteAddr(),
+                request.getMethod(),
+                endpoint
+        );
+    }
 
     /**
      * Retrieves all users from the system.
      * 
      * @return ResponseEntity containing a list of all users and HTTP 200 OK status
      */
-    @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = UserService.loadUsers();
-        return new ResponseEntity<>(users, HttpStatus.OK);
+    @GetMapping("/")
+    public ResponseEntity<List<User>> getAllUsers(HttpServletRequest request) {
+        logRequest(request, "/");
+        try {
+            List<User> users = UserService.loadUsers(); // Use static method
+            logger.info("Successfully loaded {} users", users.size());
+            return new ResponseEntity<>(users, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Failed to load users", e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -37,12 +52,21 @@ public class UserController {
      *         or HTTP 404 NOT FOUND status if user doesn't exist
      */
     @GetMapping("/users/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable int id) {
-        User user = UserService.retrieveUser(id);
-        if (user != null) {
-            return new ResponseEntity<>(user, HttpStatus.OK);
+    public ResponseEntity<User> getUserById(@PathVariable int id, HttpServletRequest request) {
+        logRequest(request, "/users/" + id);
+        try {
+            User user = UserService.retrieveUser(id); // Use static method
+            if (user != null) {
+                logger.info("Successfully retrieved user: {} (ID: {})", user.getFullName(), id);
+                return new ResponseEntity<>(user, HttpStatus.OK);
+            } else {
+                logger.warn("User not found with ID: {}", id);
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            logger.error("Failed to retrieve user with ID: {}", id, e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     /**
@@ -54,12 +78,18 @@ public class UserController {
      *         or HTTP 400 BAD REQUEST status if email already exists or role is invalid
      */
     @PostMapping("/createUser")
-    public ResponseEntity<User> createUser(@RequestBody CreateUserRequest request) {
+    public ResponseEntity<User> createUser(@RequestBody CreateUserRequest request, HttpServletRequest httpRequest) {
+        logRequest(httpRequest, "/createUser");
         try {
-            User newUser = UserService.createUser(request.getFullName(), request.getEmail(), request.getRole());
+            User newUser = UserService.createUser(request.getFullName(), request.getEmail(), request.getRole()); // Use static method
+            logger.info("Successfully created user: {} (ID: {})", newUser.getFullName(), newUser.getUserId());
             return new ResponseEntity<>(newUser, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
+            logger.warn("Failed to create user: {}", e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            logger.error("Failed to create user: {}", request.getFullName(), e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -74,12 +104,20 @@ public class UserController {
      *         or HTTP 400 BAD REQUEST status if user not found, email already exists, or role is invalid
      */
     @PutMapping("/updateUser/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable int id, @RequestBody CreateUserRequest request) {
+    public ResponseEntity<User> updateUser(@PathVariable int id, @RequestBody CreateUserRequest request, HttpServletRequest httpRequest) {
+        logRequest(httpRequest, "/updateUser/" + id);
         try {
-            User updatedUser = UserService.updateUser(id, request.getFullName(), request.getEmail(), request.getRole());
+            User updatedUser = UserService.updateUser(
+                    id, request.getFullName(), request.getEmail(), request.getRole()
+            ); // Use static method
+            logger.info("Successfully updated user: {} (ID: {})", updatedUser.getFullName(), id);
             return new ResponseEntity<>(updatedUser, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
+            logger.warn("Failed to update user with ID {}: {}", id, e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            logger.error("Failed to update user with ID: {}", id, e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

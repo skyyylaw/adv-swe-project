@@ -94,6 +94,19 @@
                 </execution>
             </executions>
         </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.3.1</version>
+                <configuration>
+                    <configLocation>src/main/resources/checkstyle.xml</configLocation>
+                    <encoding>UTF-8</encoding>
+                    <consoleOutput>true</consoleOutput>
+                    <failsOnError>false</failsOnError> <!-- Prevent build failure -->
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 </project>

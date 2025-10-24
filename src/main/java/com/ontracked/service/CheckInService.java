@@ -98,7 +98,9 @@ public void updateCheckIn(CheckIn updatedCheckIn) {
           }
 
           String[] parts = line.split(",", -1);
-          if (parts.length < 4) continue;
+          if (parts.length < 4) {
+            continue;
+          }
 
           CheckIn checkIn = new CheckIn();
           checkIn.setId(parseLong(parts[0]));

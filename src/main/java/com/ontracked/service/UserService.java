@@ -17,6 +17,9 @@ public class UserService {
     private static final String FILE_PATH = "users.csv";
     private ArrayList<User> users;
 
+    /**
+     * Basic constructor.
+     */
     public UserService() {
     }
 
@@ -177,7 +180,9 @@ public class UserService {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = splitCsv(line);
-                if (parts.length < 6) continue;
+                if (parts.length < 6) {
+                  continue;
+                }
 
                 User u = new User(parts[1], parts[2], parts[3]);
                 users.add(u);
@@ -198,7 +203,9 @@ public class UserService {
      * @return the escaped string safe for CSV storage
      */
     private static String escapeCsv(String s) {
-        if (s == null) return "";
+        if (s == null) {
+          return "";
+        }
         return '"' + s.replace("\"", "\"\"") + '"';
     }
 
@@ -214,11 +221,15 @@ public class UserService {
         boolean inQuotes = false;
         StringBuilder sb = new StringBuilder();
         for (char c : line.toCharArray()) {
-            if (c == '"') inQuotes = !inQuotes;
+            if (c == '"') {
+              inQuotes = !inQuotes;
+            }
             else if (c == ',' && !inQuotes) {
                 result.add(sb.toString().replace("\"\"", "\""));
                 sb.setLength(0);
-            } else sb.append(c);
+            } else {
+              sb.append(c);
+            }
         }
         result.add(sb.toString().replace("\"\"", "\""));
         return result.toArray(new String[0]);
