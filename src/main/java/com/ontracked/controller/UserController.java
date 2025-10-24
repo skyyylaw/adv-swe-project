@@ -107,7 +107,9 @@ public class UserController {
     public ResponseEntity<User> updateUser(@PathVariable int id, @RequestBody CreateUserRequest request, HttpServletRequest httpRequest) {
         logRequest(httpRequest, "/updateUser/" + id);
         try {
-            User updatedUser = UserService.updateUser(id, request.getFullName(), request.getEmail(), request.getRole()); // Use static method
+            User updatedUser = UserService.updateUser(
+                    id, request.getFullName(), request.getEmail(), request.getRole()
+            ); // Use static method
             logger.info("Successfully updated user: {} (ID: {})", updatedUser.getFullName(), id);
             return new ResponseEntity<>(updatedUser, HttpStatus.OK);
         } catch (IllegalArgumentException e) {

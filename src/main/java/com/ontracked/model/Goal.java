@@ -1,7 +1,7 @@
 /*
 ChatGPT 5 was used to add null/blank checks, range validation,
 ISO date validation, defensive copies, and safer child ops.
-It was also used to add comments.
+It was also used to add comments and enforce brace consistency.
  */
 
 package com.ontracked.model;
@@ -51,7 +51,7 @@ public final class Goal {
     this.id = UUID.randomUUID().toString();
     this.ownerId = requireNonBlank(ownerId, "ownerId");
     this.childrenId = new ArrayList<>();
-    this.goalStatus = Objects.requireNonNull(GoalStatus.ACTIVE, "status"); // or pick your enum default
+    this.goalStatus = Objects.requireNonNull(GoalStatus.ACTIVE, "status");
     this.latestPercentage = 0;
     this.createdAt = Instant.now();
     this.updatedAt = this.createdAt;
@@ -87,7 +87,7 @@ public final class Goal {
     this.versionNumber = Math.max(1, versionNumber);
   }
 
-  // --- Getters (children list exposed as unmodifiable view) ---
+  // --- Getters ---
 
   public String getId() { return id; }
   public String getOwnerId() { return ownerId; }
@@ -102,7 +102,7 @@ public final class Goal {
   public Instant getUpdatedAt() { return updatedAt; }
   public int getVersionNumber() { return versionNumber; }
 
-  // --- Setters (validate, then bump version/updatedAt) ---
+  // --- Setters ---
 
   public void setId(String id) {
     this.id = requireNonBlank(id, "id");
@@ -119,7 +119,6 @@ public final class Goal {
     bumpVersion();
   }
 
-  /** Replaces children with a sanitized copy (no nulls/blanks/dups). */
   public void setChildrenId(List<String> childrenId) {
     this.childrenId = sanitizeIdList(childrenId);
     bumpVersion();
@@ -135,7 +134,6 @@ public final class Goal {
     bumpVersion();
   }
 
-  /** Accepts null to unset. Must be ISO yyyy-MM-dd if non-null/non-blank. */
   public void setDueDate(String dueDate) {
     this.dueDate = validateOrNullIsoDate(dueDate);
     bumpVersion();
@@ -146,19 +144,15 @@ public final class Goal {
     bumpVersion();
   }
 
-  /** Clamped to [0,100]. */
   public void setLatestPercentage(int latestPercentage) {
     this.latestPercentage = clampPercentage(latestPercentage);
     bumpVersion();
   }
 
-  /** updatedAt must not be before createdAt. */
   public void setUpdatedAt(Instant updatedAt) {
     this.updatedAt = requireNotBefore(Objects.requireNonNull(updatedAt, "updatedAt"), this.createdAt, "updatedAt");
-    // don't bump version here; this method *is* the timestamp change.
   }
 
-  /** createdAt can only be set once safely; if you keep it mutable, guard it. */
   public void setCreatedAt(Instant createdAt) {
     this.createdAt = Objects.requireNonNull(createdAt, "createdAt");
     if (this.updatedAt != null) {
@@ -174,42 +168,54 @@ public final class Goal {
 
   // --- Children helpers ---
 
-  /** Adds childId if non-blank and not present. Returns true if added. */
   public boolean addChild(String childId) {
     String id = requireNonBlank(childId, "childId");
-    if (childrenId.contains(id)) return false;
+    if (childrenId.contains(id)) {
+      return false;
+    }
     childrenId.add(id);
     bumpVersion();
     return true;
   }
 
-  /** Removes childId if present. Returns true if removed. */
   public boolean removeChild(String childId) {
-    if (childId == null) return false;
+    if (childId == null) {
+      return false;
+    }
     boolean removed = childrenId.remove(childId);
-    if (removed) bumpVersion();
+    if (removed) {
+      bumpVersion();
+    }
     return removed;
   }
 
   // --- Convenience ---
 
-  /** Touches updatedAt to now and bumps version. */
   public void touchUpdatedAt() {
     bumpVersion();
   }
 
-  // --- Equality/Hash/ToString by id (stable identity) ---
+  // --- Equality / Hash / ToString ---
 
-  @Override public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof Goal)) return false;
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof Goal)) {
+      return false;
+    }
     Goal goal = (Goal) o;
     return Objects.equals(id, goal.id);
   }
 
-  @Override public int hashCode() { return Objects.hash(id); }
+  @Override
+  public int hashCode() {
+    return Objects.hash(id);
+  }
 
-  @Override public String toString() {
+  @Override
+  public String toString() {
     return "Goal{id='" + id + "', title='" + title + "', status=" + goalStatus +
             ", latestPercentage=" + latestPercentage + ", dueDate=" + dueDate + "}";
   }
@@ -217,24 +223,32 @@ public final class Goal {
   // --- Private helpers ---
 
   private static String requireNonBlank(String s, String field) {
-    if (s == null || s.trim().isEmpty())
+    if (s == null || s.trim().isEmpty()) {
       throw new IllegalArgumentException(field + " must be non-blank");
+    }
     return s;
   }
 
   private static String requireNonBlankOrGenerate(String s, String field) {
-    return (s == null || s.trim().isEmpty()) ? UUID.randomUUID().toString() : s;
+    if (s == null || s.trim().isEmpty()) {
+      return UUID.randomUUID().toString();
+    }
+    return s;
   }
 
   private static String blankToNull(String s) {
-    return (s == null || s.trim().isEmpty()) ? null : s;
+    if (s == null || s.trim().isEmpty()) {
+      return null;
+    }
+    return s;
   }
 
-  /** Accepts null/blank → null. Otherwise must parse as ISO yyyy-MM-dd. */
   private static String validateOrNullIsoDate(String s) {
-    if (s == null || s.trim().isEmpty()) return null;
+    if (s == null || s.trim().isEmpty()) {
+      return null;
+    }
     try {
-      LocalDate.parse(s.trim()); // ISO_LOCAL_DATE by default
+      LocalDate.parse(s.trim());
       return s.trim();
     } catch (DateTimeParseException ex) {
       throw new IllegalArgumentException("dueDate must be ISO yyyy-MM-dd");
@@ -242,8 +256,12 @@ public final class Goal {
   }
 
   private static int clampPercentage(int p) {
-    if (p < 0) return 0;
-    if (p > 100) return 100;
+    if (p < 0) {
+      return 0;
+    }
+    if (p > 100) {
+      return 100;
+    }
     return p;
   }
 
@@ -254,25 +272,25 @@ public final class Goal {
     return candidate;
   }
 
-  /** Return a new mutable list with null/blank removed and duplicates collapsed, preserving order. */
   private static List<String> sanitizeIdList(List<String> ids) {
-    if (ids == null || ids.isEmpty()) return new ArrayList<>();
+    if (ids == null || ids.isEmpty()) {
+      return new ArrayList<>();
+    }
     LinkedHashSet<String> set = new LinkedHashSet<>();
     for (String id : ids) {
-      if (id != null && !id.trim().isEmpty()) set.add(id.trim());
+      if (id != null && !id.trim().isEmpty()) {
+        set.add(id.trim());
+      }
     }
     return new ArrayList<>(set);
   }
 
-  /** Bumps version and updatedAt to now. */
   private void bumpVersion() {
     this.updatedAt = Instant.now();
     this.versionNumber = Math.max(1, this.versionNumber + 1);
   }
 
-  /** Only updates updatedAt (no semantic change). */
   private void bumpTimestampsOnly() {
     this.updatedAt = Instant.now();
   }
-
 }

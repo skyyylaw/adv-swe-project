@@ -111,7 +111,9 @@ public class GoalService {
 
       while ((line = reader.readLine()) != null) {
         String[] parts = splitCsv(line);
-        if (parts.length < 11) continue; // ignore malformed rows
+        if (parts.length < 11) {
+          continue;
+        } // ignore malformed rows
 
         // Reconstruct Goal from CSV columns
         Goal g = new Goal(parts[1]);  // ownerId
@@ -150,7 +152,9 @@ public class GoalService {
    * Double-quotes inside values are doubled for RFC4180 compliance.
    */
   private static String escapeCsv(String s) {
-    if (s == null) return "";
+    if (s == null) {
+      return "";
+    }
     return '"' + s.replace("\"", "\"\"") + '"';
   }
 
