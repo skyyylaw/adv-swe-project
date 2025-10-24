@@ -10,6 +10,7 @@ OnTrackED is a Spring Boot-based REST API service designed for tracking educatio
 - [Third-Party Dependencies](#third-party-dependencies)
 - [Project Structure](#project-structure)
 - [Project Management](#project-management)
+- [AI Development Assistance](#ai-development-assistance)
 
 ## API Documentation
 
@@ -391,3 +392,25 @@ The Trello board contains:
 - Bug reports and issue management
 - Sprint planning and progress monitoring
 - Team collaboration and communication
+
+## AI Development Assistance
+
+This project utilized AI assistance during development to enhance code quality and functionality. The following components were refined or created with the assistance of ChatGPT 5:
+
+### Components Developed with AI Assistance
+
+- **Goal Data Model**: The complete Goal class implementation including validation, defensive programming, and robust error handling
+- **API Endpoints**: All goal-related REST endpoints in the GoalController with proper request/response handling
+- **Service Layer**: The GoalService implementation for data persistence and retrieval operations
+- **Test Cases**: Comprehensive test suite including unit tests, integration tests, and validation tests
+
+### AI Contribution Details
+
+The AI assistance focused on:
+- **Code Quality**: Implementing null/blank checks, range validation, and ISO date validation
+- **Defensive Programming**: Adding safer child operations and defensive copies
+- **Error Handling**: Improving exception handling and validation logic
+- **Documentation**: Adding comprehensive comments and JavaDoc documentation
+- **Testing**: Creating thorough test cases to ensure code reliability
+
+This AI-assisted development approach helped ensure high code quality, comprehensive error handling, and robust functionality across the goal management system.
