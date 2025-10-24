@@ -301,6 +301,8 @@ The application uses the following configuration files:
    ```bash
    mvn test jacoco:report
    ```
+   
+   This generates a coverage report using JaCoCo (Java Code Coverage) tool. The report will be available in `target/site/jacoco/index.html`.
 
 4. **Run style checks**:
    ```bash
@@ -318,6 +320,17 @@ The project includes comprehensive tests for:
 ### Test Reports
 
 Test reports are generated in the `target/surefire-reports/` directory after running tests.
+
+### Coverage Reports
+
+The project uses **JaCoCo (Java Code Coverage)** for generating code coverage reports:
+
+- **Command**: `mvn test jacoco:report`
+- **Report Location**: `target/site/jacoco/index.html`
+- **Coverage Metrics**: Line coverage, branch coverage, and method coverage
+- **Report Format**: HTML report with detailed coverage analysis
+
+To view the coverage report, open the generated HTML file in a web browser after running the coverage command.
 
 ## Third-Party Dependencies
 
